@@ -1,0 +1,213 @@
+# Blockchain Clothing Store 🛍️
+
+Trang web mua bán quần áo sử dụng công nghệ Blockchain và Smart Contracts trên Ethereum.
+
+## 🌟 Tính năng
+
+- ✅ Đăng bán sản phẩm quần áo lên blockchain
+- ✅ Mua sản phẩm trực tiếp bằng ETH
+- ✅ Giao dịch minh bạch, bảo mật với Smart Contracts
+- ✅ Giao diện đẹp, responsive
+- ✅ Quản lý sản phẩm cá nhân
+- ✅ Lọc sản phẩm theo danh mục
+
+## 🛠️ Công nghệ sử dụng
+
+- **Blockchain**: Ethereum (Ganache)
+- **Smart Contract**: Solidity ^0.8.0
+- **Framework**: Truffle
+- **Frontend**: HTML5, CSS3, JavaScript
+- **Web3**: Web3.js
+- **Wallet**: MetaMask
+
+## 📋 Yêu cầu hệ thống
+
+Trước khi bắt đầu, bạn cần cài đặt:
+
+1. **Node.js** (v14 trở lên): https://nodejs.org/
+2. **Ganache**: https://trufflesuite.com/ganache/
+3. **MetaMask**: https://metamask.io/ (Extension cho trình duyệt)
+4. **Truffle** (cài đặt global):
+   ```bash
+   npm install -g truffle
+   ```
+
+## 🚀 Hướng dẫn cài đặt
+
+### Bước 1: Clone và cài đặt dependencies
+
+```bash
+# Di chuyển vào thư mục dự án
+cd d:\Code\blockchain
+
+# Cài đặt các package cần thiết
+npm install
+```
+
+### Bước 2: Cấu hình Ganache
+
+1. Mở ứng dụng **Ganache**
+2. Tạo một workspace mới hoặc sử dụng Quickstart
+3. Đảm bảo Ganache chạy trên cổng **7545** (mặc định)
+4. Lưu lại các tài khoản và private keys
+
+### Bước 3: Compile và Deploy Smart Contracts
+
+```bash
+# Compile smart contracts
+truffle compile
+
+# Deploy lên Ganache
+truffle migrate --reset
+```
+
+Sau khi deploy thành công, bạn sẽ thấy địa chỉ contract được hiển thị.
+
+### Bước 4: Cấu hình MetaMask
+
+1. Mở MetaMask extension
+2. Thêm network tùy chỉnh:
+   - **Network Name**: Ganache Local
+   - **RPC URL**: http://127.0.0.1:7545
+   - **Chain ID**: 1337
+   - **Currency Symbol**: ETH
+3. Import tài khoản từ Ganache:
+   - Copy Private Key từ Ganache
+   - Vào MetaMask > Import Account > Paste Private Key
+
+### Bước 5: Chạy ứng dụng
+
+```bash
+# Khởi động development server
+npm run dev
+```
+
+Trình duyệt sẽ tự động mở tại: http://localhost:3000
+
+## 📖 Hướng dẫn sử dụng
+
+### Kết nối ví
+
+1. Click nút **"Kết nối ví"** ở góc trên bên phải
+2. MetaMask sẽ hiện lên, chọn tài khoản và confirm
+3. Địa chỉ ví của bạn sẽ hiển thị sau khi kết nối thành công
+
+### Đăng bán sản phẩm
+
+1. Scroll xuống phần **"Đăng bán sản phẩm"**
+2. Điền thông tin:
+   - Tên sản phẩm
+   - Danh mục (Áo, Quần, Váy, etc.)
+   - Kích thước (S, M, L, XL, XXL)
+   - Giá (tính bằng ETH)
+   - Mô tả chi tiết
+   - URL hình ảnh
+3. Click **"Đăng bán sản phẩm"**
+4. Confirm transaction trên MetaMask
+5. Đợi transaction hoàn tất
+
+### Mua sản phẩm
+
+1. Xem danh sách sản phẩm ở phần **"Sản phẩm đang bán"**
+2. Lọc theo danh mục nếu muốn
+3. Click **"Mua ngay"** ở sản phẩm bạn muốn
+4. Confirm transaction trên MetaMask (đảm bảo có đủ ETH)
+5. Đợi transaction hoàn tất
+
+### Xem sản phẩm của tôi
+
+- Scroll xuống phần **"Sản phẩm của tôi"** để xem các sản phẩm bạn đã đăng bán
+
+## 📁 Cấu trúc dự án
+
+```
+blockchain/
+├── contracts/              # Smart Contracts (Solidity)
+│   ├── ClothingMarketplace.sol
+│   └── Migrations.sol
+├── migrations/             # Truffle migration scripts
+│   ├── 1_initial_migration.js
+│   └── 2_deploy_contracts.js
+├── src/                    # Frontend
+│   ├── css/
+│   │   └── style.css
+│   ├── js/
+│   │   └── app.js
+│   └── index.html
+├── build/                  # Compiled contracts (tự động tạo)
+├── truffle-config.js       # Cấu hình Truffle
+├── package.json
+└── README.md
+```
+
+## 🔧 Smart Contract Functions
+
+### `createProduct()`
+Tạo sản phẩm mới trên blockchain
+
+**Parameters:**
+- `name`: Tên sản phẩm
+- `description`: Mô tả
+- `imageUrl`: URL hình ảnh
+- `category`: Danh mục
+- `size`: Kích thước
+- `price`: Giá (wei)
+
+### `purchaseProduct(productId)`
+Mua sản phẩm
+
+**Parameters:**
+- `productId`: ID của sản phẩm
+
+### `getAvailableProducts()`
+Lấy danh sách sản phẩm chưa bán
+
+### `getMyProducts()`
+Lấy danh sách sản phẩm của người dùng hiện tại
+
+## 🐛 Xử lý sự cố
+
+### Lỗi "Contract not deployed"
+- Đảm bảo Ganache đang chạy
+- Chạy lại `truffle migrate --reset`
+
+### MetaMask không kết nối
+- Kiểm tra network trong MetaMask (phải là Ganache Local)
+- Refresh trang và thử lại
+
+### Transaction failed
+- Kiểm tra số dư ETH trong tài khoản
+- Đảm bảo gas limit đủ lớn
+
+### Không thấy sản phẩm
+- Mở Console (F12) để xem lỗi
+- Kiểm tra contract đã deploy đúng chưa
+- Refresh trang
+
+## 🔐 Bảo mật
+
+- Không bao giờ chia sẻ Private Key của bạn
+- Chỉ sử dụng Ganache cho môi trường development
+- Với production, cần thêm các biện pháp bảo mật khác
+
+## 📝 Ghi chú
+
+- Đây là dự án demo cho mục đích học tập
+- Không sử dụng trực tiếp cho production
+- Gas fees trên mainnet Ethereum sẽ cao hơn nhiều so với Ganache
+
+## 📞 Hỗ trợ
+
+Nếu gặp vấn đề, vui lòng:
+1. Kiểm tra lại các bước cài đặt
+2. Xem Console log để debug
+3. Đảm bảo tất cả dependencies đã được cài đặt đầy đủ
+
+## 📄 License
+
+MIT License - Sử dụng tự do cho mục đích học tập và phát triển.
+
+---
+
+**Chúc bạn thành công! 🎉**
+# blockchain
