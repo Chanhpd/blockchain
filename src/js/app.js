@@ -50,6 +50,7 @@ function handleAccountsChanged(accounts) {
             `${currentAccount.substring(0, 6)}...${currentAccount.substring(38)}`;
         document.getElementById('connectWallet').textContent = 'Đã kết nối';
         loadContract();
+        loadPurchaseHistory();
     }
 }
 
@@ -72,6 +73,7 @@ async function loadContract() {
             console.log('Contract đã được tải thành công');
             await loadProducts();
             await loadMyProducts();
+            await loadPurchaseHistory();
         } else {
             alert('Contract chưa được deploy trên network này!');
         }
@@ -124,6 +126,7 @@ async function purchaseProduct(productId, price) {
         alert('Mua hàng thành công!');
         await loadProducts();
         await loadMyProducts();
+        await loadPurchaseHistory();
     } catch (error) {
         console.error('Lỗi mua sản phẩm:', error);
         alert('Không thể mua sản phẩm. Vui lòng thử lại!');
@@ -159,6 +162,24 @@ async function loadMyProducts() {
         console.error('Lỗi tải sản phẩm của tôi:', error);
         document.getElementById('myProductsList').innerHTML = 
             '<div class="loading">Không thể tải sản phẩm của bạn</div>';
+    }
+}
+
+// Tải lịch sử mua hàng
+async function loadPurchaseHistory() {
+    if (!contract || !currentAccount) {
+        document.getElementById('purchaseHistoryList').innerHTML = 
+            '<div class="loading">Kết nối ví để xem lịch sử mua hàng</div>';
+        return;
+    }
+    
+    try {
+        const products = await contract.methods.getMyPurchases().call({ from: currentAccount });
+        displayPurchaseHistory(products);
+    } catch (error) {
+        console.error('Lỗi tải lịch sử mua hàng:', error);
+        document.getElementById('purchaseHistoryList').innerHTML = 
+            '<div class="loading">Không thể tải lịch sử mua hàng</div>';
     }
 }
 
@@ -219,6 +240,47 @@ function displayProducts(products, containerId, isMyProducts = false) {
     }).join('');
 }
 
+// Hiển thị lịch sử mua hàng
+function displayPurchaseHistory(products) {
+    const container = document.getElementById('purchaseHistoryList');
+    
+    if (products.length === 0) {
+        container.innerHTML = '<div class="loading">Bạn chưa mua sản phẩm nào</div>';
+        return;
+    }
+    
+    container.innerHTML = products.map(product => {
+        const priceInEth = web3.utils.fromWei(product.price, 'ether');
+        const purchaseDate = new Date().toLocaleDateString('vi-VN');
+        
+        return `
+            <div class="product-card">
+                <img src="${product.imageUrl}" alt="${product.name}" class="product-image" 
+                     onerror="this.src='https://via.placeholder.com/300x250?text=No+Image'">
+                <div class="product-info">
+                    <span class="product-category">${product.category}</span>
+                    <h3 class="product-name">${product.name}</h3>
+                    <p class="product-description">${product.description}</p>
+                    <div class="product-details">
+                        <span>Size: <span class="product-size">${product.size}</span></span>
+                        <span>ID: #${product.id}</span>
+                    </div>
+                    <div class="product-price">${priceInEth} ETH</div>
+                    <div class="product-seller">
+                        Người bán: ${product.seller.substring(0, 6)}...${product.seller.substring(38)}
+                    </div>
+                    <div class="product-status status-sold">
+                        ✓ Đã mua
+                    </div>
+                    <div class="purchase-info">
+                        <small>Mã giao dịch: ${product.id}</small>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
 // Xử lý form đăng sản phẩm
 document.addEventListener('DOMContentLoaded', async () => {
     // Khởi tạo Web3
@@ -251,6 +313,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     });
     
+    // Xử lý link "Bán hàng" để hiện/ẩn form
+    document.getElementById('sellLink').addEventListener('click', function(e) {
+        e.preventDefault();
+        const sellSection = document.getElementById('sell');
+        if (sellSection.style.display === 'none') {
+            sellSection.style.display = 'block';
+            sellSection.scrollIntoView({ behavior: 'smooth' });
+        } else {
+            sellSection.style.display = 'none';
+        }
+    });
+    
     // Xử lý smooth scroll
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
@@ -274,6 +348,7 @@ setInterval(() => {
         loadProducts();
         if (currentAccount) {
             loadMyProducts();
+            loadPurchaseHistory();
         }
     }
 }, 10000);

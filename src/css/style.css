@@ -405,3 +405,22 @@ section {
 .product-card {
     animation: fadeIn 0.5s ease-out;
 }
+
+/* Purchase History Styles */
+.purchase-history-section {
+    background: white;
+}
+
+.purchase-info {
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background: var(--light-color);
+    border-radius: 8px;
+    font-size: 0.85rem;
+    color: var(--text-color);
+}
+
+.purchase-info small {
+    display: block;
+    margin-bottom: 0.25rem;
+}

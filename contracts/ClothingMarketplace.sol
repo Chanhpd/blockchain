@@ -144,4 +144,27 @@ contract ClothingMarketplace {
         
         return myProducts;
     }
+    
+    // Lấy lịch sử mua hàng của người dùng
+    function getMyPurchases() public view returns (Product[] memory) {
+        uint256 purchaseCount = 0;
+        
+        for (uint256 i = 1; i <= productCount; i++) {
+            if (products[i].buyer == msg.sender) {
+                purchaseCount++;
+            }
+        }
+        
+        Product[] memory myPurchases = new Product[](purchaseCount);
+        uint256 index = 0;
+        
+        for (uint256 i = 1; i <= productCount; i++) {
+            if (products[i].buyer == msg.sender) {
+                myPurchases[index] = products[i];
+                index++;
+            }
+        }
+        
+        return myPurchases;
+    }
 }

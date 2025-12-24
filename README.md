@@ -6,10 +6,12 @@ Trang web mua bán quần áo sử dụng công nghệ Blockchain và Smart Cont
 
 - ✅ Đăng bán sản phẩm quần áo lên blockchain
 - ✅ Mua sản phẩm trực tiếp bằng ETH
+- ✅ Lịch sử mua hàng được lưu trên blockchain
 - ✅ Giao dịch minh bạch, bảo mật với Smart Contracts
 - ✅ Giao diện đẹp, responsive
 - ✅ Quản lý sản phẩm cá nhân
 - ✅ Lọc sản phẩm theo danh mục
+- ✅ Tích hợp MetaMask wallet
 
 ## 🛠️ Công nghệ sử dụng
 
@@ -34,7 +36,22 @@ Trước khi bắt đầu, bạn cần cài đặt:
 
 ## 🚀 Hướng dẫn cài đặt
 
-### Bước 1: Clone và cài đặt dependencies
+### Cách 1: Clone từ Git (Cho máy khác)
+
+```bash
+# Clone repository
+git clone <repository-url>
+cd blockchain
+
+# Cài đặt dependencies
+npm install
+
+# Tiếp tục các bước 2, 3, 4, 5 bên dưới
+```
+
+### Cách 2: Setup từ đầu
+
+### Bước 1: Cài đặt dependencies
 
 ```bash
 # Di chuyển vào thư mục dự án
@@ -84,6 +101,13 @@ npm run dev
 
 Trình duyệt sẽ tự động mở tại: http://localhost:3000
 
+### Bước 6: Thêm dữ liệu mẫu (Optional)
+
+```bash
+# Thêm 12 sản phẩm mẫu vào blockchain
+npm run seed
+```
+
 ## 📖 Hướng dẫn sử dụng
 
 ### Kết nối ví
@@ -94,8 +118,9 @@ Trình duyệt sẽ tự động mở tại: http://localhost:3000
 
 ### Đăng bán sản phẩm
 
-1. Scroll xuống phần **"Đăng bán sản phẩm"**
-2. Điền thông tin:
+1. Click vào menu **"Bán hàng"** để hiển thị form
+2. Scroll xuống phần **"Đăng bán sản phẩm"**
+3. Điền thông tin:
    - Tên sản phẩm
    - Danh mục (Áo, Quần, Váy, etc.)
    - Kích thước (S, M, L, XL, XXL)
@@ -118,6 +143,11 @@ Trình duyệt sẽ tự động mở tại: http://localhost:3000
 
 - Scroll xuống phần **"Sản phẩm của tôi"** để xem các sản phẩm bạn đã đăng bán
 
+### Xem lịch sử mua hàng
+
+- Scroll xuống phần **"Lịch sử mua hàng"** để xem tất cả sản phẩm bạn đã mua
+- Lịch sử được lưu vĩnh viễn trên blockchain
+
 ## 📁 Cấu trúc dự án
 
 ```
@@ -128,6 +158,8 @@ blockchain/
 ├── migrations/             # Truffle migration scripts
 │   ├── 1_initial_migration.js
 │   └── 2_deploy_contracts.js
+├── scripts/                # Utility scripts
+│   └── seed.js            # Script thêm dữ liệu mẫu
 ├── src/                    # Frontend
 │   ├── css/
 │   │   └── style.css
@@ -136,6 +168,7 @@ blockchain/
 │   └── index.html
 ├── build/                  # Compiled contracts (tự động tạo)
 ├── truffle-config.js       # Cấu hình Truffle
+├── bs-config.json          # Cấu hình Browser-sync
 ├── package.json
 └── README.md
 ```
@@ -164,6 +197,77 @@ Lấy danh sách sản phẩm chưa bán
 
 ### `getMyProducts()`
 Lấy danh sách sản phẩm của người dùng hiện tại
+
+### `getMyPurchases()`
+Lấy danh sách lịch sử mua hàng của người dùng
+
+## 📝 Scripts có sẵn
+
+```bash
+# Compile smart contracts
+npx truffle compile
+
+# Deploy contracts lên Ganache
+npx truffle migrate --reset
+
+# Chạy development server
+npm run dev
+
+# Thêm dữ liệu mẫu
+npm run seed
+```
+
+## 🔄 Hướng dẫn pull về máy khác
+
+### Bước 1: Clone repository
+
+```bash
+git clone <repository-url>
+cd blockchain
+```
+
+### Bước 2: Cài đặt dependencies
+
+```bash
+npm install
+```
+
+### Bước 3: Khởi động Ganache
+
+- Mở Ganache
+- Tạo workspace mới hoặc Quickstart
+- Đảm bảo port 7545
+
+### Bước 4: Deploy smart contracts
+
+```bash
+# Compile contracts
+npx truffle compile
+
+# Deploy lên Ganache
+npx truffle migrate --reset
+```
+
+### Bước 5: Cấu hình MetaMask
+
+1. Thêm network Ganache Local (xem hướng dẫn trên)
+2. Import account từ Ganache
+
+### Bước 6: Chạy ứng dụng
+
+```bash
+# Chạy web server
+npm run dev
+
+# (Optional) Thêm dữ liệu mẫu
+npm run seed
+```
+
+### Bước 7: Mở trình duyệt
+
+- Truy cập http://localhost:3002
+- Kết nối MetaMask
+- Bắt đầu sử dụng!
 
 ## 🐛 Xử lý sự cố
 

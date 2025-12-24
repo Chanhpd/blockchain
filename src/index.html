@@ -18,8 +18,9 @@
                 <nav class="menu">
                     <a href="#" class="active">Trang chủ</a>
                     <a href="#products">Sản phẩm</a>
-                    <a href="#sell">Bán hàng</a>
+                    <a href="#sell" id="sellLink">Bán hàng</a>
                     <a href="#my-products">Của tôi</a>
+                    <a href="#purchase-history">Lịch sử mua</a>
                 </nav>
                 <div class="wallet-info">
                     <button id="connectWallet" class="btn-primary">Kết nối ví</button>
@@ -41,7 +42,7 @@
     </section>
 
     <!-- Add Product Form -->
-    <section id="sell" class="add-product-section">
+    <section id="sell" class="add-product-section" style="display: none;">
         <div class="container">
             <h2 class="section-title">Đăng bán sản phẩm</h2>
             <form id="addProductForm" class="product-form">
@@ -116,6 +117,16 @@
             <h2 class="section-title">Sản phẩm của tôi</h2>
             <div id="myProductsList" class="products-grid">
                 <div class="loading">Kết nối ví để xem sản phẩm của bạn</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Purchase History Section -->
+    <section id="purchase-history" class="purchase-history-section">
+        <div class="container">
+            <h2 class="section-title">Lịch sử mua hàng</h2>
+            <div id="purchaseHistoryList" class="products-grid">
+                <div class="loading">Kết nối ví để xem lịch sử mua hàng</div>
             </div>
         </div>
     </section>
