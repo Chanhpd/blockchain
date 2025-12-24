@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blockchain Clothing Store - Cửa hàng quần áo trên Blockchain</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="nav">
+                <div class="logo">
+                    <h1>🛍️ Blockchain Clothing</h1>
+                </div>
+                <nav class="menu">
+                    <a href="#" class="active">Trang chủ</a>
+                    <a href="#products">Sản phẩm</a>
+                    <a href="#sell">Bán hàng</a>
+                    <a href="#my-products">Của tôi</a>
+                </nav>
+                <div class="wallet-info">
+                    <button id="connectWallet" class="btn-primary">Kết nối ví</button>
+                    <span id="accountDisplay" class="account-display"></span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h2 class="hero-title">Mua bán quần áo an toàn với Blockchain</h2>
+                <p class="hero-subtitle">Giao dịch minh bạch, bảo mật tuyệt đối với smart contracts</p>
+                <button class="btn-large" onclick="scrollToProducts()">Khám phá ngay</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Add Product Form -->
+    <section id="sell" class="add-product-section">
+        <div class="container">
+            <h2 class="section-title">Đăng bán sản phẩm</h2>
+            <form id="addProductForm" class="product-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="productName">Tên sản phẩm *</label>
+                        <input type="text" id="productName" required placeholder="Áo thun nam cao cấp">
+                    </div>
+                    <div class="form-group">
+                        <label for="productCategory">Danh mục *</label>
+                        <select id="productCategory" required>
+                            <option value="">Chọn danh mục</option>
+                            <option value="Áo">Áo</option>
+                            <option value="Quần">Quần</option>
+                            <option value="Váy">Váy</option>
+                            <option value="Áo khoác">Áo khoác</option>
+                            <option value="Phụ kiện">Phụ kiện</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="productSize">Kích thước *</label>
+                        <select id="productSize" required>
+                            <option value="">Chọn size</option>
+                            <option value="S">S</option>
+                            <option value="M">M</option>
+                            <option value="L">L</option>
+                            <option value="XL">XL</option>
+                            <option value="XXL">XXL</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="productPrice">Giá (ETH) *</label>
+                        <input type="number" id="productPrice" step="0.001" required placeholder="0.1">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="productDescription">Mô tả *</label>
+                    <textarea id="productDescription" rows="3" required placeholder="Mô tả chi tiết về sản phẩm..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="productImage">URL hình ảnh *</label>
+                    <input type="text" id="productImage" required placeholder="https://example.com/image.jpg">
+                </div>
+                <button type="submit" class="btn-primary btn-large">Đăng bán sản phẩm</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section id="products" class="products-section">
+        <div class="container">
+            <h2 class="section-title">Sản phẩm đang bán</h2>
+            <div class="filter-tabs">
+                <button class="filter-btn active" data-filter="all">Tất cả</button>
+                <button class="filter-btn" data-filter="Áo">Áo</button>
+                <button class="filter-btn" data-filter="Quần">Quần</button>
+                <button class="filter-btn" data-filter="Váy">Váy</button>
+                <button class="filter-btn" data-filter="Áo khoác">Áo khoác</button>
+            </div>
+            <div id="productsList" class="products-grid">
+                <!-- Products will be loaded here -->
+                <div class="loading">Đang tải sản phẩm...</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- My Products Section -->
+    <section id="my-products" class="my-products-section">
+        <div class="container">
+            <h2 class="section-title">Sản phẩm của tôi</h2>
+            <div id="myProductsList" class="products-grid">
+                <div class="loading">Kết nối ví để xem sản phẩm của bạn</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Blockchain Clothing Store. Powered by Ethereum & Ganache.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
