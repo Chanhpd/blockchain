@@ -139,6 +139,12 @@ body {
     color: white;
 }
 
+button:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
+    transform: none;
+}
+
 /* Sections */
 section {
     padding: 4rem 0;
@@ -150,6 +156,47 @@ section {
     margin-bottom: 2rem;
     text-align: center;
     color: var(--dark-color);
+}
+
+/* Transaction Status */
+.transaction-section {
+    background: white;
+    padding: 1.5rem 0;
+}
+
+.transaction-status {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    border: 1px solid var(--border-color);
+    border-left: 5px solid var(--primary-color);
+    border-radius: 8px;
+    background: var(--light-color);
+    padding: 1rem 1.25rem;
+    word-break: break-word;
+}
+
+.transaction-status strong {
+    color: var(--dark-color);
+}
+
+.transaction-status small {
+    color: var(--text-color);
+}
+
+.transaction-status.pending {
+    border-left-color: var(--primary-color);
+    background: #eef2ff;
+}
+
+.transaction-status.success {
+    border-left-color: var(--success-color);
+    background: #ecfdf5;
+}
+
+.transaction-status.error {
+    border-left-color: var(--danger-color);
+    background: #fef2f2;
 }
 
 /* Add Product Form */

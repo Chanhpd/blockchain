@@ -3,10 +3,68 @@ let web3;
 let contract;
 let currentAccount;
 let currentFilter = 'all';
+let pendingProductId = null;
 
 // Contract ABI và địa chỉ (sẽ được cập nhật sau khi deploy)
 const contractAddress = 'YOUR_CONTRACT_ADDRESS'; // Thay đổi sau khi deploy
 const contractABI = []; // ABI sẽ được tạo tự động sau khi compile
+
+function shortAddress(address) {
+    if (!address) return '';
+    return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
+}
+
+function escapeHtml(value) {
+    return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+function setTransactionStatus(message, type = 'info', details = '') {
+    const panel = document.getElementById('transactionStatus');
+    if (!panel) return;
+
+    panel.className = `transaction-status ${type}`;
+    panel.innerHTML = `
+        <strong>${escapeHtml(message)}</strong>
+        ${details ? `<small>${escapeHtml(details)}</small>` : ''}
+    `;
+}
+
+function clearTransactionStatus() {
+    const panel = document.getElementById('transactionStatus');
+    if (!panel) return;
+
+    panel.className = 'transaction-status';
+    panel.innerHTML = '<strong>Chưa có giao dịch mới</strong><small>Kết nối ví, đăng bán hoặc mua sản phẩm để xem trạng thái transaction.</small>';
+}
+
+function getReceiptStorageKey() {
+    return currentAccount ? `purchaseReceipts:${currentAccount.toLowerCase()}` : 'purchaseReceipts:guest';
+}
+
+function getSavedPurchaseReceipts() {
+    try {
+        return JSON.parse(localStorage.getItem(getReceiptStorageKey())) || {};
+    } catch (error) {
+        console.error('Không thể đọc receipt đã lưu:', error);
+        return {};
+    }
+}
+
+function savePurchaseReceipt(productId, receipt) {
+    const receipts = getSavedPurchaseReceipts();
+    receipts[productId] = {
+        transactionHash: receipt.transactionHash,
+        blockNumber: receipt.blockNumber,
+        from: receipt.from,
+        to: receipt.to
+    };
+    localStorage.setItem(getReceiptStorageKey(), JSON.stringify(receipts));
+}
 
 // Khởi tạo Web3 và kết nối
 async function initWeb3() {
@@ -46,9 +104,9 @@ function handleAccountsChanged(accounts) {
         document.getElementById('connectWallet').textContent = 'Kết nối ví';
     } else {
         currentAccount = accounts[0];
-        document.getElementById('accountDisplay').textContent = 
-            `${currentAccount.substring(0, 6)}...${currentAccount.substring(38)}`;
+        document.getElementById('accountDisplay').textContent = shortAddress(currentAccount);
         document.getElementById('connectWallet').textContent = 'Đã kết nối';
+        clearTransactionStatus();
         loadContract();
         loadPurchaseHistory();
     }
@@ -75,12 +133,12 @@ async function loadContract() {
             await loadMyProducts();
             await loadPurchaseHistory();
         } else {
+            setTransactionStatus('Contract chưa deploy trên network hiện tại', 'error', 'Kiểm tra Ganache network trong MetaMask và chạy truffle migrate --reset.');
             alert('Contract chưa được deploy trên network này!');
         }
     } catch (error) {
         console.error('Lỗi tải contract:', error);
-        // Nếu không thể tải từ file, sử dụng contract address thủ công
-        console.log('Đang sử dụng địa chỉ contract thủ công...');
+        setTransactionStatus('Không thể tải smart contract', 'error', 'Hãy chạy truffle compile, truffle migrate --reset rồi refresh trang.');
     }
 }
 
@@ -93,17 +151,23 @@ async function createProduct(name, description, imageUrl, category, size, price)
     
     try {
         const priceInWei = web3.utils.toWei(price.toString(), 'ether');
-        
-        await contract.methods
+
+        setTransactionStatus('Đang chờ xác nhận trên MetaMask...', 'pending', 'Vui lòng kiểm tra popup MetaMask để ký giao dịch đăng bán.');
+
+        const receipt = await contract.methods
             .createProduct(name, description, imageUrl, category, size, priceInWei)
-            .send({ from: currentAccount });
-        
-        alert('Đăng sản phẩm thành công!');
+            .send({ from: currentAccount })
+            .once('transactionHash', (hash) => {
+                setTransactionStatus('Transaction đăng bán đã được gửi', 'pending', `Hash: ${hash}`);
+            });
+
+        setTransactionStatus('Đăng sản phẩm thành công', 'success', `Hash: ${receipt.transactionHash} | Block: ${receipt.blockNumber}`);
         document.getElementById('addProductForm').reset();
         await loadProducts();
         await loadMyProducts();
     } catch (error) {
         console.error('Lỗi tạo sản phẩm:', error);
+        setTransactionStatus('Giao dịch đăng bán không thành công', 'error', error.message || 'Vui lòng thử lại.');
         alert('Không thể đăng sản phẩm. Vui lòng thử lại!');
     }
 }
@@ -114,22 +178,34 @@ async function purchaseProduct(productId, price) {
         alert('Vui lòng kết nối ví trước!');
         return;
     }
-    
+
     try {
-        await contract.methods
+        pendingProductId = String(productId);
+        loadProducts();
+        setTransactionStatus('Đang chờ xác nhận trên MetaMask...', 'pending', 'Vui lòng kiểm tra đúng giá ETH trước khi confirm.');
+
+        const receipt = await contract.methods
             .purchaseProduct(productId)
             .send({ 
                 from: currentAccount,
                 value: price
+            })
+            .once('transactionHash', (hash) => {
+                setTransactionStatus('Transaction mua hàng đã được gửi', 'pending', `Hash: ${hash}`);
             });
-        
-        alert('Mua hàng thành công!');
+
+        savePurchaseReceipt(productId, receipt);
+        setTransactionStatus('Mua hàng thành công', 'success', `Hash: ${receipt.transactionHash} | Block: ${receipt.blockNumber}`);
         await loadProducts();
         await loadMyProducts();
         await loadPurchaseHistory();
     } catch (error) {
         console.error('Lỗi mua sản phẩm:', error);
+        setTransactionStatus('Giao dịch mua không thành công', 'error', error.message || 'Vui lòng thử lại.');
         alert('Không thể mua sản phẩm. Vui lòng thử lại!');
+    } finally {
+        pendingProductId = null;
+        await loadProducts();
     }
 }
 
@@ -197,35 +273,47 @@ function displayProducts(products, containerId, isMyProducts = false) {
     if (currentFilter !== 'all' && !isMyProducts) {
         filteredProducts = products.filter(p => p.category === currentFilter);
     }
+
+    if (filteredProducts.length === 0) {
+        container.innerHTML = '<div class="loading">Không có sản phẩm phù hợp bộ lọc</div>';
+        return;
+    }
     
     container.innerHTML = filteredProducts.map(product => {
         const priceInEth = web3.utils.fromWei(product.price, 'ether');
         const isSold = product.sold;
         const isOwner = currentAccount && product.seller.toLowerCase() === currentAccount.toLowerCase();
+        const isPending = pendingProductId === String(product.id);
+        const name = escapeHtml(product.name);
+        const description = escapeHtml(product.description);
+        const imageUrl = escapeHtml(product.imageUrl);
+        const category = escapeHtml(product.category);
+        const size = escapeHtml(product.size);
+        const seller = shortAddress(product.seller);
         
         return `
-            <div class="product-card" data-category="${product.category}">
-                <img src="${product.imageUrl}" alt="${product.name}" class="product-image" 
+            <div class="product-card" data-category="${category}">
+                <img src="${imageUrl}" alt="${name}" class="product-image" 
                      onerror="this.src='https://via.placeholder.com/300x250?text=No+Image'">
                 <div class="product-info">
-                    <span class="product-category">${product.category}</span>
-                    <h3 class="product-name">${product.name}</h3>
-                    <p class="product-description">${product.description}</p>
+                    <span class="product-category">${category}</span>
+                    <h3 class="product-name">${name}</h3>
+                    <p class="product-description">${description}</p>
                     <div class="product-details">
-                        <span>Size: <span class="product-size">${product.size}</span></span>
+                        <span>Size: <span class="product-size">${size}</span></span>
                         <span>ID: #${product.id}</span>
                     </div>
                     <div class="product-price">${priceInEth} ETH</div>
                     <div class="product-seller">
-                        Người bán: ${product.seller.substring(0, 6)}...${product.seller.substring(38)}
+                        Người bán: ${seller}
                     </div>
                     <div class="product-status ${isSold ? 'status-sold' : 'status-available'}">
-                        ${isSold ? '✓ Đã bán' : '✓ Còn hàng'}
+                        ${isPending ? 'Đang xử lý...' : (isSold ? '✓ Đã bán' : '✓ Còn hàng')}
                     </div>
                     ${!isSold && !isOwner ? `
                         <div class="product-actions">
-                            <button class="btn-success" onclick="purchaseProduct(${product.id}, '${product.price}')">
-                                Mua ngay
+                            <button class="btn-success" onclick="purchaseProduct(${product.id}, '${product.price}')" ${isPending ? 'disabled' : ''}>
+                                ${isPending ? 'Đang mua...' : 'Mua ngay'}
                             </button>
                         </div>
                     ` : ''}
@@ -249,31 +337,41 @@ function displayPurchaseHistory(products) {
         return;
     }
     
+    const receipts = getSavedPurchaseReceipts();
+
     container.innerHTML = products.map(product => {
         const priceInEth = web3.utils.fromWei(product.price, 'ether');
-        const purchaseDate = new Date().toLocaleDateString('vi-VN');
+        const receipt = receipts[product.id] || {};
+        const name = escapeHtml(product.name);
+        const description = escapeHtml(product.description);
+        const imageUrl = escapeHtml(product.imageUrl);
+        const category = escapeHtml(product.category);
+        const size = escapeHtml(product.size);
+        const seller = shortAddress(product.seller);
         
         return `
             <div class="product-card">
-                <img src="${product.imageUrl}" alt="${product.name}" class="product-image" 
+                <img src="${imageUrl}" alt="${name}" class="product-image" 
                      onerror="this.src='https://via.placeholder.com/300x250?text=No+Image'">
                 <div class="product-info">
-                    <span class="product-category">${product.category}</span>
-                    <h3 class="product-name">${product.name}</h3>
-                    <p class="product-description">${product.description}</p>
+                    <span class="product-category">${category}</span>
+                    <h3 class="product-name">${name}</h3>
+                    <p class="product-description">${description}</p>
                     <div class="product-details">
-                        <span>Size: <span class="product-size">${product.size}</span></span>
+                        <span>Size: <span class="product-size">${size}</span></span>
                         <span>ID: #${product.id}</span>
                     </div>
                     <div class="product-price">${priceInEth} ETH</div>
                     <div class="product-seller">
-                        Người bán: ${product.seller.substring(0, 6)}...${product.seller.substring(38)}
+                        Người bán: ${seller}
                     </div>
                     <div class="product-status status-sold">
                         ✓ Đã mua
                     </div>
                     <div class="purchase-info">
-                        <small>Mã giao dịch: ${product.id}</small>
+                        <small>Mã sản phẩm: #${product.id}</small>
+                        ${receipt.transactionHash ? `<small>Tx hash: ${escapeHtml(receipt.transactionHash)}</small>` : ''}
+                        ${receipt.blockNumber ? `<small>Block: ${escapeHtml(receipt.blockNumber)}</small>` : ''}
                     </div>
                 </div>
             </div>

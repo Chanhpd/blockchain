@@ -35,7 +35,8 @@ contract ClothingMarketplace {
         string name,
         uint256 price,
         address seller,
-        address buyer
+        address buyer,
+        uint256 purchasedAt
     );
     
     // Tạo sản phẩm mới
@@ -74,17 +75,17 @@ contract ClothingMarketplace {
         
         require(product.exists, "Product does not exist");
         require(!product.sold, "Product already sold");
-        require(msg.value >= product.price, "Insufficient payment");
+        require(msg.value == product.price, "Payment must equal product price");
         require(msg.sender != product.seller, "Seller cannot buy own product");
-        
-        // Chuyển tiền cho người bán
-        product.seller.transfer(msg.value);
-        
+
         // Cập nhật thông tin sản phẩm
         product.buyer = msg.sender;
         product.sold = true;
-        
-        emit ProductPurchased(_id, product.name, product.price, product.seller, msg.sender);
+
+        // Chuyển tiền sau khi đã cập nhật trạng thái để giảm rủi ro reentrancy
+        product.seller.transfer(msg.value);
+
+        emit ProductPurchased(_id, product.name, product.price, product.seller, msg.sender, block.timestamp);
     }
     
     // Lấy tất cả sản phẩm

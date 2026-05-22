@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "lite-server",
     "seed": "node scripts/seed.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "truffle test --network test"
   },
   "keywords": ["blockchain", "ethereum", "smart-contract", "marketplace", "clothing"],
   "author": "",
