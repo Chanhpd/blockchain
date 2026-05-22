@@ -76,6 +76,8 @@ body {
     display: flex;
     align-items: center;
     gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
 }
 
 .account-display {
@@ -164,6 +166,39 @@ section {
     padding: 1.5rem 0;
 }
 
+.wallet-dashboard {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.wallet-card {
+    background: var(--light-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1rem;
+    min-width: 0;
+}
+
+.wallet-card span {
+    display: block;
+    color: #64748b;
+    font-size: 0.78rem;
+    font-weight: 600;
+    margin-bottom: 0.35rem;
+    text-transform: uppercase;
+}
+
+.wallet-card strong {
+    display: block;
+    color: var(--dark-color);
+    font-size: 1rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .transaction-status {
     display: flex;
     flex-direction: column;
@@ -202,15 +237,30 @@ section {
 /* Add Product Form */
 .add-product-section {
     background: white;
+    opacity: 0;
+    transform: translateY(-8px);
+    transition: opacity 0.22s ease, transform 0.22s ease;
+}
+
+.add-product-section.is-open {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .product-form {
-    max-width: 800px;
+    max-width: 1100px;
     margin: 0 auto;
     background: var(--light-color);
     padding: 2rem;
-    border-radius: 12px;
+    border-radius: 8px;
     box-shadow: var(--shadow);
+}
+
+.sell-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(280px, 0.7fr);
+    gap: 2rem;
+    align-items: start;
 }
 
 .form-row {
@@ -218,6 +268,10 @@ section {
     grid-template-columns: 1fr 1fr;
     gap: 1.5rem;
     margin-bottom: 1.5rem;
+}
+
+.form-row.compact {
+    grid-template-columns: 1fr 1fr;
 }
 
 .form-group {
@@ -250,6 +304,43 @@ section {
     border-color: var(--primary-color);
 }
 
+.product-preview {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+}
+
+.product-preview img {
+    width: 100%;
+    height: 260px;
+    display: block;
+    object-fit: cover;
+    background: var(--border-color);
+}
+
+.product-preview div {
+    padding: 1.25rem;
+}
+
+.product-preview h3 {
+    color: var(--dark-color);
+    font-size: 1.2rem;
+    margin: 0.5rem 0;
+}
+
+.product-preview p {
+    color: var(--text-color);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.product-preview strong {
+    color: var(--primary-color);
+    font-size: 1.35rem;
+}
+
 /* Filter Tabs */
 .filter-tabs {
     display: flex;
@@ -274,6 +365,31 @@ section {
 .filter-btn:hover {
     background: var(--primary-color);
     color: white;
+}
+
+.market-tools {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 220px;
+    gap: 1rem;
+    margin: 0 auto 2rem;
+    max-width: 820px;
+}
+
+.market-tools input,
+.market-tools select {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    background: white;
+    color: var(--text-color);
+    font: inherit;
+}
+
+.market-tools input:focus,
+.market-tools select:focus {
+    outline: none;
+    border-color: var(--primary-color);
 }
 
 /* Products Grid */
@@ -399,6 +515,29 @@ section {
     font-size: 1.1rem;
 }
 
+.empty-state {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    text-align: center;
+    padding: 3rem 1.5rem;
+    border: 1px dashed var(--border-color);
+    border-radius: 8px;
+    background: white;
+}
+
+.empty-state strong {
+    color: var(--dark-color);
+    font-size: 1.15rem;
+}
+
+.empty-state span {
+    color: #64748b;
+    max-width: 520px;
+}
+
 /* Footer */
 .footer {
     background: var(--dark-color);
@@ -429,6 +568,13 @@ section {
     }
 
     .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .wallet-dashboard,
+    .sell-layout,
+    .market-tools,
+    .form-row.compact {
         grid-template-columns: 1fr;
     }
 

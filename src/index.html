@@ -44,6 +44,24 @@
     <!-- Transaction Status -->
     <section class="transaction-section">
         <div class="container">
+            <div class="wallet-dashboard">
+                <div class="wallet-card">
+                    <span>Trạng thái ví</span>
+                    <strong id="walletStatus">Chưa kết nối</strong>
+                </div>
+                <div class="wallet-card">
+                    <span>Network</span>
+                    <strong id="networkDisplay">Chưa xác định</strong>
+                </div>
+                <div class="wallet-card">
+                    <span>Balance</span>
+                    <strong id="balanceDisplay">-- ETH</strong>
+                </div>
+                <div class="wallet-card">
+                    <span>Contract</span>
+                    <strong id="contractDisplay">Chưa tải</strong>
+                </div>
+            </div>
             <div id="transactionStatus" class="transaction-status">
                 <strong>Chưa có giao dịch mới</strong>
                 <small>Kết nối ví, đăng bán hoặc mua sản phẩm để xem trạng thái transaction.</small>
@@ -56,47 +74,60 @@
         <div class="container">
             <h2 class="section-title">Đăng bán sản phẩm</h2>
             <form id="addProductForm" class="product-form">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="productName">Tên sản phẩm *</label>
-                        <input type="text" id="productName" required placeholder="Áo thun nam cao cấp">
+                <div class="sell-layout">
+                    <div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="productName">Tên sản phẩm *</label>
+                                <input type="text" id="productName" required placeholder="Áo thun nam cao cấp">
+                            </div>
+                            <div class="form-group">
+                                <label for="productPrice">Giá (ETH) *</label>
+                                <input type="number" id="productPrice" min="0.001" step="0.001" required placeholder="0.1">
+                            </div>
+                        </div>
+                        <div class="form-row compact">
+                            <div class="form-group">
+                                <label for="productCategory">Danh mục *</label>
+                                <select id="productCategory" required>
+                                    <option value="">Chọn danh mục</option>
+                                    <option value="Áo">Áo</option>
+                                    <option value="Quần">Quần</option>
+                                    <option value="Váy">Váy</option>
+                                    <option value="Áo khoác">Áo khoác</option>
+                                    <option value="Phụ kiện">Phụ kiện</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="productSize">Kích thước *</label>
+                                <select id="productSize" required>
+                                    <option value="">Chọn size</option>
+                                    <option value="S">S</option>
+                                    <option value="M">M</option>
+                                    <option value="L">L</option>
+                                    <option value="XL">XL</option>
+                                    <option value="XXL">XXL</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="productDescription">Mô tả *</label>
+                            <textarea id="productDescription" rows="3" required placeholder="Mô tả chi tiết về sản phẩm..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="productImage">URL hình ảnh *</label>
+                            <input type="url" id="productImage" required placeholder="https://example.com/image.jpg">
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="productCategory">Danh mục *</label>
-                        <select id="productCategory" required>
-                            <option value="">Chọn danh mục</option>
-                            <option value="Áo">Áo</option>
-                            <option value="Quần">Quần</option>
-                            <option value="Váy">Váy</option>
-                            <option value="Áo khoác">Áo khoác</option>
-                            <option value="Phụ kiện">Phụ kiện</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="productSize">Kích thước *</label>
-                        <select id="productSize" required>
-                            <option value="">Chọn size</option>
-                            <option value="S">S</option>
-                            <option value="M">M</option>
-                            <option value="L">L</option>
-                            <option value="XL">XL</option>
-                            <option value="XXL">XXL</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="productPrice">Giá (ETH) *</label>
-                        <input type="number" id="productPrice" step="0.001" required placeholder="0.1">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="productDescription">Mô tả *</label>
-                    <textarea id="productDescription" rows="3" required placeholder="Mô tả chi tiết về sản phẩm..."></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="productImage">URL hình ảnh *</label>
-                    <input type="text" id="productImage" required placeholder="https://example.com/image.jpg">
+                    <aside class="product-preview">
+                        <img id="imagePreview" src="" alt="Xem trước sản phẩm">
+                        <div>
+                            <span id="previewCategory" class="product-category">Danh mục</span>
+                            <h3 id="previewName">Tên sản phẩm</h3>
+                            <p id="previewDescription">Mô tả sản phẩm sẽ hiển thị tại đây.</p>
+                            <strong id="previewPrice">0 ETH</strong>
+                        </div>
+                    </aside>
                 </div>
                 <button type="submit" class="btn-primary btn-large">Đăng bán sản phẩm</button>
             </form>
@@ -113,6 +144,15 @@
                 <button class="filter-btn" data-filter="Quần">Quần</button>
                 <button class="filter-btn" data-filter="Váy">Váy</button>
                 <button class="filter-btn" data-filter="Áo khoác">Áo khoác</button>
+            </div>
+            <div class="market-tools">
+                <input type="search" id="productSearch" placeholder="Tìm theo tên, mô tả, người bán...">
+                <select id="sortProducts">
+                    <option value="newest">Mới nhất</option>
+                    <option value="price-asc">Giá thấp đến cao</option>
+                    <option value="price-desc">Giá cao đến thấp</option>
+                    <option value="name-asc">Tên A-Z</option>
+                </select>
             </div>
             <div id="productsList" class="products-grid">
                 <!-- Products will be loaded here -->
